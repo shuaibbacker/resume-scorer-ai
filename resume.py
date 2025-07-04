@@ -54,9 +54,9 @@ job_role = st.sidebar.text_input("💼 Enter Job Role")
 
 if st.sidebar.button("✅ Get Score"):
     with st.spinner("Analyzing.."):
-        prompt = f"Analyze the extracted text:\n{text}, and job role:\n{job_role}. According to job role and text calculate the score out of 1-10 and only show the calculated score without showing entire text."
+        prompt = f"Analyze the extracted text:\n{text}, and job role:\n{job_role}. According to job role and text calculate the score out of 1-10 and only show the calculated score without showing entire text. and suggest changes to make a resume perfect score"
         response = get_gemini_response(prompt)
-        st.subheader(f"The resume Score: {response}, out of 10")
+        st.subheader(f"The resume Score: {response} out of 10")
 
 
 # # Main Area Response
