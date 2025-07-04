@@ -1,6 +1,20 @@
 import streamlit as st
 import pdfplumber as pdf
+import os
+import google.generativeai as genai
+from dotenv import load_dotenv
 
+load_dotenv()
+
+# configure the Gemini API
+genai.configure(api_key=os.getenv("Gemini_API"))
+
+# Create function for Gemini response
+
+def get_gemini_response(input_text):
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(input_text)
+    return response.text
 
 # Authentication Creation
 
@@ -37,19 +51,25 @@ if uploaded_file is not None:
 job_role = st.sidebar.text_input("💼 Enter Job Role")
 
 # Get Score Button
-get_score = st.sidebar.button("✅ Get Score")
 
-# Main Area Response
-st.title("Resume Scoring App")
+if st.sidebar.button("✅ Get Score"):
+    with st.spinner("Analyzing.."):
+        prompt = f"Analyze the extracted text:\n{text}, and job role:\n{job_role}. According to job role and text calculate the score out of 1-10 and only show the calculated score without showing entire text."
+        response = get_gemini_response(prompt)
+        st.subheader(f"The resume Score: {response}, out of 10")
 
-if get_score:
-    if uploaded_file is not None and job_role.strip() != "":
-        # Display input summary
-        st.success("Resume and Job Role received!")
-        st.write(f"**Job Role:** {job_role}")
-        st.write(f"**Uploaded File Name:** {uploaded_file.name}")
+
+# # Main Area Response
+# st.title("Resume Scoring App")
+
+# if get_score:
+#     if uploaded_file is not None and job_role.strip() != "":
+#         # Display input summary
+#         st.success("Resume and Job Role received!")
+#         st.write(f"**Job Role:** {job_role}")
+#         st.write(f"**Uploaded File Name:** {uploaded_file.name}")
         
-        # Placeholder: scoring logic goes here
-        st.info("Scoring in progress... (connect your model here)")
-    else:
-        st.warning("Please upload a resume and enter a job role.")
+#         # Placeholder: scoring logic goes here
+#         st.info("Scoring in progress... (connect your model here)")
+#     else:
+#         st.warning("Please upload a resume and enter a job role.")
