@@ -1,21 +1,43 @@
 import streamlit as st
 import pdfplumber as pdf
 import os
-import google.generativeai as genai
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
 # configure the Gemini API
-genai.configure(api_key=os.getenv("Gemini_API"))
 
-# Create function for Gemini response
+API_KEY = os.getenv("GEMINI_API")
+
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+
+# Function for gemini Api
 
 def get_gemini_response(input_text):
-    model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(input_text)
-    return response.text
+    headers = {
 
+        'Content-Type': "application/json"
+    }
+    data = {
+        "contents": {
+            {
+                "parts": [
+                    {
+                        "text": input_text
+                    }
+                ]
+            }
+        }
+    }
+    response = requests.post(GEMINI_URL, headers=headers, json=data)
+
+    if response.status_code==200:
+        result = response.json()
+        return result['candidates'][0]['contents']['parts'][0]['text']
+    else:
+        return f"API Error: {response.status_code} - {response.text}"
+    
 # Authentication Creation
 
 st.set_page_config(page_title="Resume scrorer Ai", layout="centered")
